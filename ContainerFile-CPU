@@ -1,0 +1,55 @@
+FROM registry.fedoraproject.org/f35/python3
+
+MAINTAINER Ted Brunell <tbrunell@redhat.com>
+
+USER root
+
+RUN wget https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-35.noarch.rpm &&\
+    yum localinstall -y rpmfusion-free-release-35.noarch.rpm 
+
+RUN yum install -y ffmpeg &&\
+    yum clean -y all
+
+RUN pip3 install --upgrade pip
+
+RUN pip3 install torch \
+                 torchvision \
+                 torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+
+RUN mkdir -p /root/.torch/models
+
+RUN git clone https://github.com/jantic/DeOldify.git &&\
+    mv DeOldify data
+
+RUN chmod +x data/run_notebook.sh
+
+RUN mkdir -p data/models
+
+RUN wget -O /root/.torch/models/vgg16_bn-6c64b313.pth https://download.pytorch.org/models/vgg16_bn-6c64b313.pth &&\
+    wget -O /root/.torch/models/resnet34-333f7ec4.pth https://download.pytorch.org/models/resnet34-333f7ec4.pth                 
+
+RUN wget -O data/models/ColorizeArtistic_gen.pth https://data.deepai.org/deoldify/ColorizeArtistic_gen.pth &&\
+   wget -O data/models/ColorizeVideo_gen.pth https://data.deepai.org/deoldify/ColorizeVideo_gen.pth
+
+RUN pip install versioneer \
+		tensorboardX \
+		Flask \
+		pillow \
+		numpy \
+		scikit-image \
+		requests \
+		ffmpeg-python \
+		youtube-dl \
+		jupyterlab \
+		opencv-python \
+                ipywidgets \
+                widgetsnbextension \
+                pandas-profiling \
+		fastai
+
+EXPOSE 8888
+EXPOSE 5000
+
+WORKDIR data
+
+CMD ["sh","run_notebook.sh"]
