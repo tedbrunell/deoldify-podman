@@ -2,7 +2,7 @@
 
 This repo contains 2 ContainerFiles to build the deoldify image and video colorization code in a podman container.
 
-The ```ContainerFile`` file is the one that should be used if you have a GPU.  If not, use the ```ContainerFile-CPU`` file.
+The ```ContainerFile``` file is the one that should be used if you have a GPU.  If not, use the ```ContainerFile-CPU``` file.
 
 Both ContainerFiles use the Fedora35-Python3 container image as the base image.
 
